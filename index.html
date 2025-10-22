@@ -43,7 +43,8 @@
 
     <header>
         <div class="container">
-            <h1>Summit - Trabalhos Científicos</h1>
+            <img src="logo.png" />
+            <h1 style="color: black; margin-top: 5px">Trabalhos Científicos</h1>
         </div>
     </header>
 
@@ -81,8 +82,10 @@
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
-                        <h2>${trabalho.titulo}</h2>
-                        <p><strong>Autor:</strong> ${trabalho.autor}</p>
+                        <div>
+                          <h3>${trabalho.titulo}</h3>
+                          <p><strong>Autor:</strong> ${trabalho.autor}</p>
+                        </div>
                         <button class="btn-visualizar" onclick="abrirPdf('${trabalho.link}')">Visualizar PDF</button>
                     `;
                     container.appendChild(card);
