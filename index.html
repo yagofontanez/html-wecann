@@ -10,32 +10,63 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="icon" type="image/png" href="icon-logo-1.png" />
     <style>
-        .modal-dialog {
-            max-width: 90%;
-            width: 90%;
-        }
-
-        .modal-content {
-            height: 80vh;
-        }
-
-        iframe {
-            width: 100%;
-            height: 70vh;
-        }
-
-        .additional-info {
-            display: none;
-        }
-
-        .additional-info.show {
-            display: block;
-        }
-
         .btn-visualizar {
             margin-top: 10px;
             width: 100%;
             background: linear-gradient(to right, #00e8c8, #0ad8ed, #d82a7d);
+        }
+
+        .btn-back {
+            margin-top: 10px;
+            width: 200px;
+            background: linear-gradient(to right, #f56c6c, #f58b8b, #f5a8a8);
+            color: white;
+            font-size: 1.2em;
+            padding: 15px;
+            border-radius: 25px;
+            border: none;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .btn-back:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-back:active {
+            transform: translateY(2px);
+            box-shadow: none;
+        }
+
+        header {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 30px 0;
+        }
+
+        .card {
+            background: linear-gradient(135deg, #ffffff 0%, #f7f9fa 100%);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+                box-shadow 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            border: 1px solid #e0e0e0;
+            overflow: hidden;
+            position: relative;
+            min-height: 250px;
+            height: 480px;
         }
     </style>
 </head>
@@ -54,22 +85,6 @@
         </div>
     </div>
 
-    <div class="modal fade" id="pdfModal" tabindex="-1" aria-labelledby="pdfModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <iframe id="pdfIframe" src="" frameborder="0"></iframe>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
     <script>
         async function carregarTrabalhos() {
             try {
@@ -79,7 +94,7 @@
                 const container = document.getElementById('trabalhos-container');
                 container.innerHTML = '';
 
-                data.trabalhos.forEach((trabalho, index) => {
+                data.trabalhos.forEach((trabalho) => {
                     const card = document.createElement('div');
                     card.className = 'card';
                     card.innerHTML = `
@@ -97,38 +112,30 @@
             }
         }
 
-        function toggleAdditionalInfo(link) {
-            const currentCard = link.closest('.card');
-            const currentAdditionalInfo = currentCard.querySelector('.additional-info');
-            const allAdditionalInfos = document.querySelectorAll('.additional-info');
-            const allLinks = document.querySelectorAll('.visualize-link');
-
-            allAdditionalInfos.forEach(info => {
-                if (info !== currentAdditionalInfo && info.classList.contains('show')) {
-                    info.classList.remove('show');
-                }
-            });
-
-            allLinks.forEach(lnk => {
-                if (lnk !== link) {
-                    lnk.innerHTML = 'Visualizar mais <i class="bi bi-chevron-down"></i>';
-                }
-            });
-
-            if (currentAdditionalInfo.classList.contains('show')) {
-                currentAdditionalInfo.classList.remove('show');
-                link.innerHTML = 'Visualizar mais <i class="bi bi-chevron-down"></i>';
-            } else {
-                currentAdditionalInfo.classList.add('show');
-                link.innerHTML = 'Visualizar menos <i class="bi bi-chevron-up"></i>';
-            }
-        }
-
         function abrirPdf(pdfUrl) {
-            const modal = new bootstrap.Modal(document.getElementById('pdfModal'));
-            const iframe = document.getElementById('pdfIframe');
-            iframe.src = pdfUrl;
-            modal.show();
+            const newWindow = window.open(pdfUrl, '_blank');
+
+            newWindow.onload = function () {
+                const backButton = newWindow.document.createElement('button');
+                backButton.innerHTML = 'Voltar';
+                backButton.className = 'btn-back';
+                backButton.style.position = 'absolute';
+                backButton.style.top = '70px';
+                backButton.style.left = '4%';
+                backButton.style.transform = 'translateX(-50%)';
+                backButton.style.backgroundColor = '#00e8c8';
+                backButton.style.color = 'white';
+                backButton.style.boxShadow = '0 4px 8px rgba(0, 0, 0, 0.2);';
+                backButton.style.width = '100px';
+                backButton.style.height = '30px';
+                backButton.style.border = 'none';
+                backButton.style.borderRadius = '5px';
+                backButton.onclick = function () {
+                    newWindow.close();
+                };
+
+                newWindow.document.body.appendChild(backButton);
+            };
         }
 
         document.addEventListener('DOMContentLoaded', carregarTrabalhos);
